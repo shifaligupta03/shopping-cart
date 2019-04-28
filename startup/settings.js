@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const fileUpload = require('express-fileupload');
 
 module.exports = function (express, app) {
     app.set('views', path.join('views'));
@@ -10,6 +11,8 @@ module.exports = function (express, app) {
     app.use(express.static(path.join('public')));
 
     app.locals.errors = null;
+
+    app.use(fileUpload());
 
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
