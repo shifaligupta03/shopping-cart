@@ -3,13 +3,11 @@ const router = express.Router();
 const {Page, validatePage} = require('../models/page');
 const validatePageBody = require('../middleware/adminPage');
 
-//mongodb+srv://admin:admin@cart-ldl8w.mongodb.net/shopping_cart?retryWrites=true
-
-
 router.get('/', async(req, res)=>{
     try{
         const pages = await Page.find().sort({sorting:1});
-        return res.render('admin/pages',{pages});
+        return res.send(pages);
+        // return res.render('admin/pages',{pages});
     } catch(e){
         console.log(e);
         throw new Error(e);
