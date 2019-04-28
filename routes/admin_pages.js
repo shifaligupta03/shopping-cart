@@ -6,8 +6,7 @@ const validatePageBody = require('../middleware/adminPage');
 router.get('/', async(req, res)=>{
     try{
         const pages = await Page.find().sort({sorting:1});
-        return res.send(pages);
-        // return res.render('admin/pages',{pages});
+        return res.render('admin/pages',{pages});
     } catch(e){
         console.log(e);
         throw new Error(e);
@@ -93,9 +92,5 @@ function getSlug(slug, title){
     if (slug == "") slug = title.replace(/ /g, '-').toLowerCase();
     return slug;
 }
-
-
-
-
 
 module.exports = router;
