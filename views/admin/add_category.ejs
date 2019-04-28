@@ -1,0 +1,17 @@
+<%- include('../layouts/adminheader') %>
+
+<h2 class="page-title"> Add a Category</h2>
+<a href="/admin/categories" class="btn btn-primary"> Categories</a>
+<br/><br/>
+
+<form method="post" action="<%if (id=='') {%>  /admin/categories/add-category  <%} else{ %>  /admin/categories/edit-category/<%= id %>  <%} %>">
+
+    <div class="form-group">
+        <label for=""> Title</label>
+        <input type="text" class="form-control" name="title" value="<%= title %>" placeholder="Title">
+    </div>
+    <input class="btn btn-primary" type="submit">
+</form>
+
+<%- include('../layouts/adminfooter') %>
+
