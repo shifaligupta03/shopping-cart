@@ -30,6 +30,8 @@ const Product = mongoose.model('Product', ProductSchema);
 
 const validateProduct = [
     check('title', 'Title must have a value').not().isEmpty({ ignore_whitespace: false }),
+    check('desc', 'Description must have a value').not().isEmpty({ ignore_whitespace: false }),
+    check('price', 'Price must have a value').isDecimal(),
 ];
 
 exports.Product = Product;

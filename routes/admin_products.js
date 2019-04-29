@@ -5,6 +5,8 @@ const fs = require('fs-extra');
 const resizeImg = require('resize-img');
 const {Product, validateProduct} = require('../models/product');
 const {category, validateCategory} = require('../models/category');
+const validateProductBody = require('../middleware/adminProduct');
+
 
 
 
@@ -20,18 +22,12 @@ router.get('/add-product', async(req, res) =>{
     const price=""; 
     const id="";
     const categories = await category.find();
-    // console.log(categories);
-    // [...categories].forEach(function(cat){
-    //     console.log(cat.slug);
-    // })
-
-    // return res.send({
-    //     title, desc, price, categories, id
-    //  });
-
     return res.render('admin/add_product',{
        title, desc, price, categories, id
     });
+});
+
+router.post('/add-category', validateProduct, validateProductBody, async (req, res) => {
 });
 
 
