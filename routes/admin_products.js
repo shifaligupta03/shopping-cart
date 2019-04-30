@@ -8,8 +8,6 @@ const {category, validateCategory} = require('../models/category');
 const validateProductBody = require('../middleware/adminProduct');
 
 
-
-
 router.get('/', async(req, res)=>{
     const products = await Product.find();
     const count = products.length;
@@ -27,7 +25,8 @@ router.get('/add-product', async(req, res) =>{
     });
 });
 
-router.post('/add-category', validateProduct, validateProductBody, async (req, res) => {
+router.post('/add-product', validateProduct, validateProductBody, async (req, res) => {
+    console.log(req.body);
 });
 
 
