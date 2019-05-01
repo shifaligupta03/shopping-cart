@@ -53,6 +53,17 @@ router.post('/add-product', validateProduct, validateProductBody, async (req, re
     return res.redirect('/admin/products');
 });
 
+// router.get('/edit-product', async(req, res) =>{
+//    let errors;
+//    if(req.session.errors) errors = req.session.errors;
+//    req.session.errors= null;
+// });
 
+router.get('/edit-product/:id', async(req, res)=>{
+    const categories = await category.find();
+    let product = await Product.findOne({_id: req.params.id});
+    let result ={...product._doc, id: product._id, categories};
+    return res.render('admin/add_product',result);
+});
 
 module.exports = router;
