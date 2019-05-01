@@ -31,27 +31,26 @@ router.post('/add-product', validateProduct, validateProductBody, async (req, re
     const desc = req.body.desc;
     const price= req.body.price; 
     const category= req.body.category;
-    console.log(req.body);
     let product = await Product.findOne({ slug });
     if (product) {
         req.flash('danger', 'Title already exists. Please choose another.');
-        return res.render('admin/add_product', {...req.body});
+        return res.render('admin/add_product', {...req.body, id:''});
     }
 
     const price2 = parseFloat(price).toFixed(2);
     let imageFile= (req.files && req.files.image && typeof(req.files.image.name) !== 'undefined') ? req.files.image.name : null;
-    product = new Product({title, desc, price: price2, category, image: imageFile});
+    product = new Product({title, desc, slug, price: price2, category, image: imageFile});
     product = await product.save();
-    await mkdirp('public/product_images'+product._id);
-    await mkdirp('public/product_images'+product._id+'/gallery');
-    await mkdirp('public/product_images'+product._id+'/gallery/thumbs');
-    if(imageFile !== ''){
+    await mkdirp('public/images/product_images/'+product._id);
+    await mkdirp('public/images/product_images/'+product._id+'/gallery');
+    await mkdirp('public/images/product_images/'+product._id+'/gallery/thumbs');
+    if(imageFile){
         const productImage = req.files.image;
-        const imgPath = 'public/product_images/'+product._id+'/'+imageFile;
+        const imgPath = 'public/images/product_images/'+product._id+'/'+imageFile;
         await productImage.mv(imgPath);
     }
     req.flash('success', 'Product added.');
-    return res.redirect('admin/pages');
+    return res.redirect('/admin/products');
 });
 
 
