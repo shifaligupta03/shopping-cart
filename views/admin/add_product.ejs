@@ -32,10 +32,10 @@
     </div>
 
     <div class="form-group">
-            <label for=""> Image</label>
-            <input type="file" class="form-control" name="image"  id="img" >
-            <img src="#" id="imgPreview">
-        </div>
+        <label for=""> Image</label>
+        <input type="file" class="form-control" name="image"  id="img" >
+        <img src=" <%= '/images/product_images/'+id+'/'+image %>" id="imgPreview">
+    </div>
 
     <input class="btn btn-primary" type="submit">
 </form>

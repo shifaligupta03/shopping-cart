@@ -60,9 +60,13 @@ router.post('/add-product', validateProduct, validateProductBody, async (req, re
 // });
 
 router.get('/edit-product/:id', async(req, res)=>{
-    const categories = await category.find();
+    let categories = await category.find();
     let product = await Product.findOne({_id: req.params.id});
     let result ={...product._doc, id: product._id, categories};
+    // let galleryDir = 'public/images/product_images/'+product._id+'/gallery';
+    // let galleryImages = null;
+
+    // galleryImages = await fs.readdir(galleryDir)
     return res.render('admin/add_product',result);
 });
 
