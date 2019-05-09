@@ -4,7 +4,7 @@
 <a href="/admin/products" class="btn btn-primary"> Products</a>
 <br/><br/>
 
-<form method="post" enctype="multipart/form-data" action="<%if (id=='') {%>/admin/products/add-product<%} else{ %>  /admin/categories/edit-product/<%= id %>  <%} %>">
+<form method="post" enctype="multipart/form-data" action="/admin/products/edit-product/<%= id %>">
 
     <div class="form-group">
         <label for=""> Title</label>
@@ -50,7 +50,7 @@
         <label for="">Upload Image</label>
         <input type="file" class="form-control" name="image"  id="img" >
     </div>
-    <input type="hidden" name="image" value="<%= image %>">
+    <input type="hidden" name="productImage" value="<%= image %>">
     <input class="btn btn-primary" type="submit">
 </form>
 
