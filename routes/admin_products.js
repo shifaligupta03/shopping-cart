@@ -59,15 +59,86 @@ router.post('/add-product', validateProduct, validateProductBody, async (req, re
 //    req.session.errors= null;
 // });
 
+// router.get('/edit-product/:id', async(req, res)=>{
+//     let categories = await category.find();
+//     let product = await Product.findOne({_id: req.params.id});
+//     let result ={...product._doc, id: product._id, categories};
+//     // let galleryDir = 'public/images/product_images/'+product._id+'/gallery';
+//     // let galleryImages = null;
+
+//     // galleryImages = await fs.readdir(galleryDir)
+//     return res.render('admin/add_product',result);
+// });
+
+
 router.get('/edit-product/:id', async(req, res)=>{
+    let errors = null;
+    if(req.session.errors) errors = req.session.errors;
+    req.session.errors = null;
     let categories = await category.find();
     let product = await Product.findOne({_id: req.params.id});
-    let result ={...product._doc, id: product._id, categories};
-    // let galleryDir = 'public/images/product_images/'+product._id+'/gallery';
-    // let galleryImages = null;
+    console.log(product);
+    let galleryDir = 'public/images/product_images/'+product._id+'/gallery';
+    let galleryImages = await fs.readdir(galleryDir);
+    let result ={...product._doc, 
+        id: product._id, 
+        categories, 
+        category: product.category.replace(/\s+/g,'-').toLowerCase(), 
+        image: product.image, galleryImages: galleryImages,
+        price: parseFloat(product.price).toFixed(2)};
 
-    // galleryImages = await fs.readdir(galleryDir)
-    return res.render('admin/add_product',result);
+    console.log(result);
+    return res.render('admin/edit_product',result);
+});
+
+router.post('/edit-product/:id', validateProduct, validateProductBody, async(req, res)=>{
+    let imageFile =typeofreq.files.image !=="undefined" ? req.files.image.name : "";
+    const id= req.params.id;
+    const title = req.body.title;
+    const slug = title.replace(/\s+/g,'-').toLowerCase();
+    const desc = req.body.desc;
+    const price = parseFloat(req.body.price).toFixed(2);
+    const category = req.body.category;
+    const productImage = req.body.productImage;
+   
+    const result = { title, slug, desc, price, category };
+    if(imageFile !=""){
+        result['image'] = imageFile;
+    }
+    let product = await Product.findOne({ slug, id:{'$ne': id} });
+    if (product) {
+        req.flash('danger', 'Product title already exists. Please choose another.');
+        return res.redirect('/admin/products/edit-product/'+id);
+    }
+
+    Product.findById(id, function(err, product){
+        if(err) console.log(err);
+        product.title = title;
+        product.slug = slug;
+        product.desc = desc;
+        product.category = category;
+        product.price = price;
+        if(imageFile !== ''){
+            product.image = imageFile;
+        }
+        product.save(function(err){
+            if(err) console.log(err);
+            if(imageFile != '') {
+                if(productImage != ''){
+                    fs.remove('public/product_images/'+id+'/'+productImage, function(err){
+                        if(err) console.log(err);
+                    })
+                }
+                const productImage = req.files.image;
+                const imgPath = 'public/images/product_images/'+id+'/'+imageFile;
+                productImage.mv(imgPath, function(err){
+                    console.log(err);
+                });
+            }
+             req.flash('success', 'Product updated successfully.');
+            res.redirect('/admin/pages');
+        })
+    })
 });
 
 module.exports = router;

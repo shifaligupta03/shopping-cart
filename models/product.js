@@ -35,7 +35,7 @@ const validateProduct = [
     check('desc', 'Description must have a value').not().isEmpty({ ignore_whitespace: false }),
     check('price', 'Price must have a value').isDecimal(),
     check('image', 'You must upload an image').custom((value,{req}) => {
-        let imageFile= (    req.files && req.files.image && typeof(req.files.image.name) !== 'undefined') ? req.files.image.name : null;
+        let imageFile= (  req.files && req.files.image && typeof(req.files.image.name) !== 'undefined') ? req.files.image.name : null;
         if(imageFile){
             let fileext = path.extname(imageFile).toLowerCase();
             let uploadExtensions = config.get('upload-file-ext');
