@@ -1,3 +1,4 @@
 {
-    "upload-file-ext":[".jpg",".jpeg",".png"]
+    "upload-file-ext":[".jpg",".jpeg",".png"],
+    "product_images_path":"public/images/product_images/"
 }

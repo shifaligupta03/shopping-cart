@@ -6,6 +6,8 @@ const resizeImg = require('resize-img');
 const {Product, validateProduct} = require('../models/product');
 const {category, validateCategory} = require('../models/category');
 const validateProductBody = require('../middleware/adminProduct');
+const config = require('config');
+const ProductImagesPath = config.get('product_images_path');
 
 
 router.get('/', async(req, res)=>{
@@ -15,6 +17,7 @@ router.get('/', async(req, res)=>{
 });
 
 router.get('/add-product', async(req, res) =>{
+    // let {title, desc, price, id}
     const title ="";
     const desc ="";
     const price=""; 
@@ -41,12 +44,12 @@ router.post('/add-product', validateProduct, validateProductBody, async (req, re
     let imageFile= (req.files && req.files.image && typeof(req.files.image.name) !== 'undefined') ? req.files.image.name : null;
     product = new Product({title, desc, slug, price: price2, category, image: imageFile});
     product = await product.save();
-    await mkdirp('public/images/product_images/'+product._id);
-    await mkdirp('public/images/product_images/'+product._id+'/gallery');
-    await mkdirp('public/images/product_images/'+product._id+'/gallery/thumbs');
+    await mkdirp(ProductImagesPath+product._id);
+    await mkdirp(ProductImagesPath+product._id+'/gallery');
+    await mkdirp(ProductImagesPath+product._id+'/gallery/thumbs');
     if(imageFile){
         const productImage = req.files.image;
-        const imgPath = 'public/images/product_images/'+product._id+'/'+imageFile;
+        const imgPath = ProductImagesPath+product._id+'/'+imageFile;
         await productImage.mv(imgPath);
     }
     req.flash('success', 'Product added.');
@@ -77,8 +80,11 @@ router.get('/edit-product/:id', async(req, res)=>{
     req.session.errors = null;
     let categories = await category.find();
     let product = await Product.findOne({_id: req.params.id});
-    let galleryDir = 'public/images/product_images/'+product._id+'/gallery';
-    let galleryImages = await fs.readdir(galleryDir);
+    let galleryDir = ProductImagesPath+product._id+'/gallery';
+    let galleryImages = [];
+    if (fs.existsSync(galleryDir)) {
+        galleryImages = await fs.readdir(galleryDir);
+    }
     let result ={...product._doc, 
         id: product._id, 
         categories, 
@@ -90,55 +96,40 @@ router.get('/edit-product/:id', async(req, res)=>{
 
 router.post('/edit-product/:id', validateProduct, validateProductBody, async(req, res)=>{
     let imageFile = (req.files && typeof req.files.image !=="undefined" && typeof req.files.image.name !=="undefined") ? req.files.image.name : "";
+    let {title, desc, price, category,productImage} = {...req.body};
     const id= req.params.id;
-    const title = req.body.title;
     const slug = title.replace(/\s+/g,'-').toLowerCase();
-    const desc = req.body.desc;
-    const price = parseFloat(req.body.price).toFixed(2);
-    const category = req.body.category;
-    let productImage = req.body.productImage;
+    price = parseFloat(req.body.price).toFixed(2);
    
-    const result = { title, slug, desc, price, category };
-    if(imageFile !=""){
-        result['image'] = imageFile;
-    }
     let product = await Product.findOne({ slug, _id:{'$ne': id} });
     if (product) {
         req.flash('danger', 'Product title already exists. Please choose another.');
         return res.redirect('/admin/products/edit-product/'+id);
     } 
-    Product.findById(id, function(err, product){
-    
-        if(err) console.log(err);
-        product.title = title;
-        product.slug = slug;
-        product.desc = desc;
-        product.category = category;
-        product.price = price;
-        if(imageFile !== ''){
-            product.image = imageFile;
+    const result = { title, slug, desc, category, price };
+    if(imageFile !== ''){
+        result['image'] = imageFile;
+    }
+    product = await Product.findOneAndUpdate({"_id": id}, result,{new: true});
+    if(imageFile != '') {
+        if(productImage != ''){
+            const path = ProductImagesPath+id+'/'+productImage;
+            if (fs.existsSync(path)) {
+                fs.remove(path, function(err){
+                    if(err) console.log(err);
+                })
+            } else {
+                await mkdirp(ProductImagesPath+id);
+                await mkdirp(ProductImagesPath+id+'/gallery');
+                await mkdirp(ProductImagesPath+id+'/gallery/thumbs');
+            }        
         }
-        product.save(function(err){
-            if(err) console.log(err);
-            if(imageFile != '') {
-                if(productImage != ''){
-                    const path = 'public/images/product_images/'+id+'/'+productImage;
-                    if (fs.existsSync(path)) {
-                        fs.remove(path, function(err){
-                            if(err) console.log(err);
-                        })
-                    }         
-                }
-                productImage = req.files.image;
-                const imgPath = 'public/images/product_images/'+id+'/'+imageFile;
-                productImage.mv(imgPath, function(err){
-                    console.log(err);
-                });
-            }
-             req.flash('success', 'Product updated successfully.');
-            res.redirect('/admin/products');
-        })
-    })
+        productImage = req.files.image;
+        const imgPath = ProductImagesPath+id+'/'+imageFile;
+        await productImage.mv(imgPath);
+    }
+    req.flash('success', 'Product updated successfully.');
+    res.redirect('/admin/products');
 });
 
 module.exports = router;
