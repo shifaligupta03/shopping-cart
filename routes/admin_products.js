@@ -7,7 +7,7 @@ const {Product, validateProduct} = require('../models/product');
 const {category, validateCategory} = require('../models/category');
 const validateProductBody = require('../middleware/adminProduct');
 const config = require('config');
-const ProductImagesPath = config.get('product_images_path');
+const productImagesPath = config.get('product_images_path');
 
 
 router.get('/', async(req, res)=>{
@@ -44,12 +44,12 @@ router.post('/add-product', validateProduct, validateProductBody, async (req, re
     let imageFile= (req.files && req.files.image && typeof(req.files.image.name) !== 'undefined') ? req.files.image.name : null;
     product = new Product({title, desc, slug, price: price2, category, image: imageFile});
     product = await product.save();
-    await mkdirp(ProductImagesPath+product._id);
-    await mkdirp(ProductImagesPath+product._id+'/gallery');
-    await mkdirp(ProductImagesPath+product._id+'/gallery/thumbs');
+    await mkdirp(productImagesPath+product._id);
+    await mkdirp(productImagesPath+product._id+'/gallery');
+    await mkdirp(productImagesPath+product._id+'/gallery/thumbs');
     if(imageFile){
         const productImage = req.files.image;
-        const imgPath = ProductImagesPath+product._id+'/'+imageFile;
+        const imgPath = productImagesPath+product._id+'/'+imageFile;
         await productImage.mv(imgPath);
     }
     req.flash('success', 'Product added.');
@@ -80,7 +80,7 @@ router.get('/edit-product/:id', async(req, res)=>{
     req.session.errors = null;
     let categories = await category.find();
     let product = await Product.findOne({_id: req.params.id});
-    let galleryDir = ProductImagesPath+product._id+'/gallery';
+    let galleryDir = productImagesPath+product._id+'/gallery';
     let galleryImages = [];
     if (fs.existsSync(galleryDir)) {
         galleryImages = await fs.readdir(galleryDir);
@@ -113,23 +113,36 @@ router.post('/edit-product/:id', validateProduct, validateProductBody, async(req
     product = await Product.findOneAndUpdate({"_id": id}, result,{new: true});
     if(imageFile != '') {
         if(productImage != ''){
-            const path = ProductImagesPath+id+'/'+productImage;
+            const path = productImagesPath+id+'/'+productImage;
             if (fs.existsSync(path)) {
                 fs.remove(path, function(err){
                     if(err) console.log(err);
                 })
             } else {
-                await mkdirp(ProductImagesPath+id);
-                await mkdirp(ProductImagesPath+id+'/gallery');
-                await mkdirp(ProductImagesPath+id+'/gallery/thumbs');
+                await mkdirp(productImagesPath+id);
+                await mkdirp(productImagesPath+id+'/gallery');
+                await mkdirp(productImagesPath+id+'/gallery/thumbs');
             }        
         }
         productImage = req.files.image;
-        const imgPath = ProductImagesPath+id+'/'+imageFile;
+        const imgPath = productImagesPath+id+'/'+imageFile;
         await productImage.mv(imgPath);
     }
     req.flash('success', 'Product updated successfully.');
     res.redirect('/admin/products');
 });
+
+
+router.post('/product-gallery/:id', async(req, res)=>{
+   let productImage = req.files.file;
+   const id = req.params.id;
+   const galleryPath = productImagesPath+id+'/gallery/'+req.files.file.name;
+   const thumbsPath = productImagesPath+id+'/gallery/thumbs/'+req.files.file.name;
+   await productImage.mv(galleryPath);
+   let buffer = await resizeImg(fs.readFileSync(galleryPath), {width:100, height: 100});
+   await fs.writeFileSync(thumbsPath, buffer);
+   res.sendStatus(200);
+});
+
 
 module.exports = router;

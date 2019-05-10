@@ -70,6 +70,12 @@
 <br><br>
 
 <form action="/admin/products/product-gallery/<%=id %>" method="post" enctype="multipart/form-data" class="dropzone" id="dropzoneForm">
+<div class="fallback">
+    <input type="file" name="file" multiple>
+    <input type="submit" value="Upload">
+</div>
+
+
 </form>
 
 
