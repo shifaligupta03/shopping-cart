@@ -155,4 +155,14 @@ router.get('/delete-image/:image', async(req, res)=>{
  });
 
 
+router.get('/delete-product/:id', async(req, res)=>{
+    const id = req.params.id;
+    const product = await Product.findByIdAndRemove(id);
+    await fs.remove(productImagesPath+id);
+    req.flash('success', 'Product deleted successfully.');
+    res.redirect('/admin/products');
+    
+ });
+
+
 module.exports = router;
