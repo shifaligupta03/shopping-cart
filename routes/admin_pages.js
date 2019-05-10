@@ -43,18 +43,22 @@ router.post('/add-page', validatePage, validatePageBody, async (req, res) => {
 });
 
 router.post('/reorder-page', async(req, res)=>{
-  let ids = req.body['id[]'];
-  let count =0;
-
+    let ids = req.body['id[]'];
+    let count = 0;
     ids.forEach(function (id) {
         count++;
-        (async function(count){
+        (async function (count) {
             let page = await Page.findById(id);
-            page.sorting=count;
+            page.sorting = count;
             await page.save();
+            ++count;
+            if (count >= ids.length) {
+                req.app.locals.pages = await Page.find().sort({ sorting: 1 }).exec();
+                res.send('success');
+            }
         })(count);
     });
-});
+  });
 
 router.get('/edit-page/:id', async(req, res)=>{
     const page = await Page.findById(req.params.id);

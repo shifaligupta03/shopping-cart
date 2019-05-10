@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const fileUpload = require('express-fileupload');
 
+
 module.exports = function (express, app) {
     app.set('views', path.join('views'));
     app.set('view engine', 'ejs');
