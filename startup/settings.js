@@ -3,6 +3,9 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const fileUpload = require('express-fileupload');
+const {Page} = require('../models/page');
+const {category} = require('../models/category');
+
 
 
 module.exports = function (express, app) {
@@ -17,6 +20,18 @@ module.exports = function (express, app) {
 
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
+
+    // Get all pages to pass to header
+    Page.find().sort({sorting:1}).exec(function(err, pages){
+        if (err) console.log(err);
+        app.locals.pages = pages;
+    });
+
+    // Get all categories
+    category.find().sort({ sorting: 1 }).exec(function (err, categories) {
+        if (err) console.log(err);
+        app.locals.categories = categories;
+    });
 
     app.use(require('connect-flash')());
     app.use(function (req, res, next) {
