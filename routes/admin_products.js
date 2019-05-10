@@ -144,5 +144,15 @@ router.post('/product-gallery/:id', async(req, res)=>{
    res.sendStatus(200);
 });
 
+router.get('/delete-image/:image', async(req, res)=>{
+    const id = req.query.id;
+    const originalImagePath = productImagesPath+id+'/gallery/'+req.params.image;
+    const thumbPath = productImagesPath+id+'/gallery/thumbs/'+req.params.image;
+    await fs.remove(originalImagePath);
+    await fs.remove(thumbPath);
+    req.flash('success', 'Image deleted.');
+    res.redirect('/admin/products/edit-product/'+id);
+ });
+
 
 module.exports = router;
