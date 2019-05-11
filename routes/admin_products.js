@@ -22,18 +22,19 @@ router.get('/add-product', async(req, res) =>{
     const desc ="";
     const price=""; 
     const id="";
-    const categories = await category.find();
+    const categories = JSON.stringify(await category.find()) ;
     return res.render('admin/add_product',{
        title, desc, price, categories, id
     });
 });
 
 router.post('/add-product', validateProduct, validateProductBody, async (req, res) => {
-    const title = req.body.title;
+    const {title,desc, price, category, categories} ={...req.body};
+    // const title = req.body.title;
     const slug = title.replace(/ /g, '-').toLowerCase();
-    const desc = req.body.desc;
-    const price= req.body.price; 
-    const category= req.body.category;
+    // const desc = req.body.desc;
+    // const price= req.body.price; 
+    // const categories= [...req.body.categories];
     let product = await Product.findOne({ slug });
     if (product) {
         req.flash('danger', 'Title already exists. Please choose another.');
