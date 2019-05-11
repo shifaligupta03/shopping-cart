@@ -38,6 +38,7 @@ router.post('/add-page', validatePage, validatePageBody, async (req, res) => {
     result['sorting'] = 0;
     page = new Page(result);
     page = await page.save();
+    reloadPages(req);
     req.flash('success', 'Page added successfully.');
     res.redirect('/admin/pages');
 });
@@ -53,7 +54,8 @@ router.post('/reorder-page', async(req, res)=>{
             await page.save();
             ++count;
             if (count >= ids.length) {
-                req.app.locals.pages = await Page.find().sort({ sorting: 1 }).exec();
+                reloadPages(req);
+                // req.app.locals.pages = await Page.find().sort({ sorting: 1 }).exec();
                 res.send('success');
             }
         })(count);
@@ -80,12 +82,14 @@ router.post('/edit-page/:id', validatePage, validatePageBody, async(req, res)=>{
     }
 
     page = await Page.findOneAndUpdate({"_id": id}, result,{new: true});
+    reloadPages(req);
     req.flash('success', 'Page updated successfully.');
     res.redirect('/admin/pages');
 });
 
 router.get('/delete-page/:id', async(req, res)=>{
     const page = await Page.findByIdAndRemove(req.params.id);
+    reloadPages(req);
     req.flash('success', 'Page deleted successfully.');
     res.redirect('/admin/pages');
 });
@@ -95,6 +99,10 @@ function getSlug(slug, title){
     slug = slug.replace(/ /g, '-').toLowerCase();
     if (slug == "") slug = title.replace(/ /g, '-').toLowerCase();
     return slug;
+}
+
+async function reloadPages(req){
+    req.app.locals.pages = await Page.find().sort({ sorting: 1 }).exec();
 }
 
 module.exports = router;

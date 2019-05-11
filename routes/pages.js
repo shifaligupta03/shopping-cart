@@ -10,6 +10,9 @@ router.get('/', async(req, res) => {
 router.get('/:slug', async(req, res) =>{
     const slug = req.params.slug;
     let page = await Page.findOne({slug});
+    if(!page){
+        page = await Page.findOne({slug:'home'});
+    }
     res.render('index',{title:page.title, content: page.content});
 
 });

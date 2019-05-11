@@ -32,6 +32,7 @@ router.post('/add-category', validateCategory, validateCategoryBody, async (req,
     }
     Category = new category(result);
     Category = await Category.save();
+    reloadCategories(req);
     req.flash('success', 'Category added successfully.');
     res.redirect('/admin/categories');
 });
@@ -55,14 +56,20 @@ router.post('/edit-category/:id', validateCategory, validateCategoryBody, async(
     }
 
     Category = await category.findOneAndUpdate({"_id": id}, result,{new: true});
+    reloadCategories(req)
     req.flash('success', 'Category updated successfully.');
     res.redirect('/admin/categories');
 });
 
 router.get('/delete-category/:id', async(req, res)=>{
     const Category = await category.findByIdAndRemove(req.params.id);
+    reloadCategories(req);
     req.flash('success', 'Category deleted successfully.');
     res.redirect('/admin/categories');
 });
+
+async function reloadCategories(req){
+    req.app.locals.categories = await category.find().exec();
+}
 
 module.exports = router;
