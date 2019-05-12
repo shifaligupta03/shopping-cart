@@ -3,12 +3,21 @@ img.productImage{
     height:160px;
 }
 
-.productAnchor{
-    
+.productAnchor{   
     display: inline-block;
 }
 
 .row-products p{
     margin-top: 20px;
     margin-bottom: 20px;
+}
+
+.product-detail-image{
+    width:100%;
+}
+
+ul.gallery li{
+    display: inline-block;
+    margin: 20px;
+    list-style: none;
 }
