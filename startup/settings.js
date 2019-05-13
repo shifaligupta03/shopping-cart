@@ -33,11 +33,6 @@ module.exports = function (express, app) {
         app.locals.categories = categories;
     });
 
-    app.get("*", function(req, res, next){
-        res.locals.cart = (req.session && req.session.cart) ? req.session.cart : 0;
-        next();
-    })
-
     app.use(require('connect-flash')());
     app.use(function (req, res, next) {
         res.locals.messages = require('express-messages')(req, res);
@@ -46,8 +41,14 @@ module.exports = function (express, app) {
 
     app.use(session({
         secret: 'keyboard cat',
+        cart:[],
         resave: true,
         saveUninitialized: true,
         // cookie: { secure: true }
     }));
+
+    app.get("*", function(req, res, next){
+        res.locals.cart = (req.session && req.session.cart) ? req.session.cart : [];
+        next();
+    })
 }
