@@ -41,5 +41,9 @@ router.get('/add/:product', async(req, res) => {
     res.redirect('back');
 });
 
+router.get('/checkout', async(req, res) => {
+    res.render('checkout',{title:'Checkout', cart: req.session.cart})
+});
+
 
 module.exports = router;
