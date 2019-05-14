@@ -7,8 +7,6 @@ const productImagePath = config.get('product_images_path');
 router.get('/add/:product', async(req, res) => {
     const slug= req.params.product;
     let product = await Product.findOne({slug});
-    console.log('product');
-    console.log(product);
     if(req.session && req.session.cart){
         let cart = req.session.cart;
         // let newItem= true;
@@ -17,14 +15,12 @@ router.get('/add/:product', async(req, res) => {
         });
         
         if(filtered.length){         
-            filtered[0].qty++;
-            filtered[0].price+= filtered[0].price;
-               
+            filtered[0].qty++;               
         }else{
             cart.push({ title: slug, 
                 qty:1,
                 price: parseFloat(product.price).toFixed(2), 
-                image: productImagePath+product._id+'/'+product.image
+                image: '/images/product_images/'+product._id+'/'+product.image
             });
         }
 
@@ -33,7 +29,7 @@ router.get('/add/:product', async(req, res) => {
         req.session.cart.push({ title: slug, 
                             qty:1,
                             price: parseFloat(product.price).toFixed(2), 
-                            image: productImagePath+product._id+'/'+product.image
+                            image: '/images/product_images/'+product._id+'/'+product.image
                         });
 
     }
@@ -42,7 +38,8 @@ router.get('/add/:product', async(req, res) => {
 });
 
 router.get('/checkout', async(req, res) => {
-    res.render('checkout',{title:'Checkout', cart: req.session.cart})
+
+    res.render('checkout',{title:'Checkout', cart: req.session.cart});
 });
 
 

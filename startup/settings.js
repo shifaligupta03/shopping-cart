@@ -15,6 +15,7 @@ module.exports = function (express, app) {
     app.use(express.static(path.join('public')));
 
     app.locals.errors = null;
+    app.locals.cart = [];
 
     app.use(fileUpload());
 
