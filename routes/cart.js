@@ -10,7 +10,7 @@ router.get('/add/:product', async(req, res) => {
     if(req.session && req.session.cart){
         let cart = req.session.cart;
         // let newItem= true;
-        var filtered = cart.filter(function(prod){
+        let filtered = cart.filter(function(prod){
             return prod.title == slug;
         });
         
@@ -40,6 +40,33 @@ router.get('/add/:product', async(req, res) => {
 router.get('/checkout', async(req, res) => {
 
     res.render('checkout',{title:'Checkout', cart: req.session.cart});
+});
+
+
+router.get('/update/:product', async(req, res) => {
+    let slug= req.params.product;
+    let cart = req.session.cart;
+    let action = req.query.action;
+    let filtered = cart.filter(function(prod){
+        return prod.title == slug;
+    });
+    if(filtered.length){
+        switch(action){
+            case 'add':
+                filtered[0].qty++;
+                break;
+            case 'remove':
+                filtered[0].qty--;
+                break;
+            case 'clear':
+                cart.splice(filtered,1);
+                break;
+
+        }
+    }
+
+    req.flash('success','Product updated');
+    res.redirect('/cart/checkout');
 });
 
 
