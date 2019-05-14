@@ -9,7 +9,6 @@ router.get('/add/:product', async(req, res) => {
     let product = await Product.findOne({slug});
     if(req.session && req.session.cart){
         let cart = req.session.cart;
-        // let newItem= true;
         let filtered = cart.filter(function(prod){
             return prod.title == slug;
         });
@@ -38,7 +37,6 @@ router.get('/add/:product', async(req, res) => {
 });
 
 router.get('/checkout', async(req, res) => {
-
     res.render('checkout',{title:'Checkout', cart: req.session.cart});
 });
 

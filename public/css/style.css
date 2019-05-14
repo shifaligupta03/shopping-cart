@@ -29,3 +29,9 @@ img.productImg{
 table.alignmiddle td{
     vertical-align: middle;
 }
+
+.ajaxbg{
+    position: absolute;
+    width:100%;
+    height:100%;
+}
