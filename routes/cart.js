@@ -47,25 +47,34 @@ router.get('/update/:product', async(req, res) => {
     let slug= req.params.product;
     let cart = req.session.cart;
     let action = req.query.action;
-    let filtered = cart.filter(function(prod){
+    let index = cart.findIndex(function(prod, i){
         return prod.title == slug;
-    });
-    if(filtered.length){
+      });
+   
+    if(cart.length && cart[index]){
         switch(action){
             case 'add':
-                filtered[0].qty++;
+                cart[index].qty++;
                 break;
             case 'remove':
-                filtered[0].qty--;
+                cart[index].qty--;
+
+                if(cart[index].qty<1) cart.splice(index,1);
                 break;
             case 'clear':
-                cart.splice(filtered,1);
+                cart.splice(index,1);
                 break;
 
         }
     }
 
     req.flash('success','Product updated');
+    res.redirect('/cart/checkout');
+});
+
+router.get('/clear', async(req, res) => {
+    req.session.cart=[];
+    req.flash('success','Cart cleared.');
     res.redirect('/cart/checkout');
 });
 
