@@ -76,5 +76,10 @@ router.get('/clear', async(req, res) => {
     res.redirect('/cart/checkout');
 });
 
+router.get('/buynow', async(req, res) => {
+    req.session.cart=[];
+    res.sendStatus(200);
+});
+
 
 module.exports = router;

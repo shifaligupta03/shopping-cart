@@ -14,4 +14,12 @@ $(function(){
     $('a.clearCart').on('click', function(){
         if(!confirm('Are you sure you want to clear your cart?')) return false;
     });
+
+    $('a.buynow').on('click', function(e){
+        e.preventDefault();
+        $.get('/cart/buynow', function(){
+            $('form.paypalForm input[type=image]').click();
+            $('.ajaxbg').show();
+        });
+    });
 });
