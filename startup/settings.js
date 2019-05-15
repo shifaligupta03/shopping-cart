@@ -5,8 +5,7 @@ const session = require('express-session');
 const fileUpload = require('express-fileupload');
 const {Page} = require('../models/page');
 const {category} = require('../models/category');
-
-
+const passport = require('passport');
 
 module.exports = function (express, app) {
     app.set('views', path.join('views'));
@@ -48,8 +47,15 @@ module.exports = function (express, app) {
         // cookie: { secure: true }
     }));
 
+    //Passport config
+    require('../config/passport')(passport);
+
+    //Passport middleware
+    app.use(passport.initialize());
+    app.use(passport.session());
+
     app.get("*", function(req, res, next){
         res.locals.cart = (req.session && req.session.cart) ? req.session.cart : [];
         next();
-    })
+    });
 }
