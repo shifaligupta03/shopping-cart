@@ -14,7 +14,7 @@ module.exports= function(passport){
                 if(isMatch){
                     return done(null, user);
                 } else{
-                    eturn done(null, false, {message : 'Wrong Password.'});
+                    return done(null, false, {message : 'Wrong Password.'});
                 }
             })
 
@@ -27,7 +27,7 @@ module.exports= function(passport){
     passport.serializeUser(function(user, done){
         done(null, user.id);
     });
-    
+
     passport.deserializeUser(function(user, done){
         User.findById(id, function(err, user){
             done(null, user);
