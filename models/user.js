@@ -23,9 +23,9 @@ const UserSchema = mongoose.Schema({
     }
 });
 
-const validateUser = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
 
-const validatePage = [
+const validateUser = [
     check('name', 'Name must have a value').not().isEmpty({ ignore_whitespace: false }),
     check('email', 'Email must not be empty').not().isEmpty({ ignore_whitespace: false }),
 ];

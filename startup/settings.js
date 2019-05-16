@@ -56,6 +56,7 @@ module.exports = function (express, app) {
 
     app.get("*", function(req, res, next){
         res.locals.cart = (req.session && req.session.cart) ? req.session.cart : [];
+        res.locals.user = req.user || null;
         next();
     });
 }
