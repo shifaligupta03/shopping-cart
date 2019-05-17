@@ -16,7 +16,13 @@ router.post('/register', validateUser, validateUserBody, async(req, res) => {
         req.flash('danger', 'Username already exists. Please choose another.');
         return res.render('/users/register', {...req.body});
     }
-    res.render('register',{title:'Register'});
+    let salt = await bcrypt.genSalt(10);
+    password = await bcrypt.hash(password,salt);
+    user = new User({name, email, username,passport,admin:1});
+    user = await user.save();
+    req.flash('success', 'You are now registered.');
+    res.redirect('/users/login');
+
 });
 
 
