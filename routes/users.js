@@ -4,9 +4,10 @@ const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const {User, validateUser} = require('../models/user');
 const validateUserBody = require('../middleware/user');
+// const title = 'Register';
 
 router.get('/register', async(req, res) => {
-    res.render('register',{title:'Register'});
+    res.render('register',{title: 'Register'});
 });
 
 router.post('/register', validateUser, validateUserBody, async(req, res) => {
@@ -14,7 +15,7 @@ router.post('/register', validateUser, validateUserBody, async(req, res) => {
     let user = await User.findOne({username});
     if(user){
         req.flash('danger', 'Username already exists. Please choose another.');
-        return res.render('/users/register', {...req.body});
+        return res.render('register', {...req.body});
     }
     let salt = await bcrypt.genSalt(10);
     password = await bcrypt.hash(password,salt);

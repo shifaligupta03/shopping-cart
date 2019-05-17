@@ -1,7 +1,8 @@
 <% include layouts/header %>
 <h1><%=title %></h1>
 
-<form method="POST" action="/users/register">
+<form method="POST" action="register">
+<input type="hidden" name="title" value="<%= title %>">
 <div class="form-group">
   <label>Name</label>
   <input type="text" class="form-control" name="name" placeholder="Name">
