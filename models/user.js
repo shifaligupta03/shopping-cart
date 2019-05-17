@@ -26,8 +26,11 @@ const UserSchema = mongoose.Schema({
 const User = mongoose.model('User', UserSchema);
 
 const validateUser = [
-    check('name', 'Name must have a value').not().isEmpty({ ignore_whitespace: false }),
-    check('email', 'Email must not be empty').not().isEmpty({ ignore_whitespace: false }),
+    check('name', 'Name is required').not().isEmpty({ ignore_whitespace: false }),
+    check('email', 'Email is required').isEmail().not().isEmpty({ ignore_whitespace: false }),
+    check('username', 'Username is required').not().isEmpty({ ignore_whitespace: false }),
+    check('password', 'Password is required').not().isEmpty({ ignore_whitespace: false }),
+    // check('password2', 'Passwords do not match').equals(password)
 ];
 
 exports.User = User;
