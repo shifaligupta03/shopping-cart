@@ -29,8 +29,15 @@ const validateUser = [
     check('name', 'Name is required').not().isEmpty({ ignore_whitespace: false }),
     check('email', 'Email is required').isEmail().not().isEmpty({ ignore_whitespace: false }),
     check('username', 'Username is required').not().isEmpty({ ignore_whitespace: false }),
-    check('password', 'Password is required').not().isEmpty({ ignore_whitespace: false }),
-    // check('password2', 'Passwords do not match').equals(password)
+    check('password', 'Password is required').isLength({ min: 4 }).not().isEmpty({ ignore_whitespace: false }),
+    check("password2", "invalid password")
+        .custom((value,{req, loc, path}) => {
+            if (value !== req.body.password) {
+                throw new Error("Passwords do not match");
+            } else {
+                return value;
+            }
+        })
 ];
 
 exports.User = User;
